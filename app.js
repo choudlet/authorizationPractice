@@ -6,17 +6,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var passport = require('passport');
 var session = require('express-session');
-var GoogleStrategy = require('passport-google-oauth20').Strategy;
 
-passport.use(new GoogleStrategy({
-    clientID: '443622544378-biklaaoig57hhrl4fm1egh85aj5v7a9i.apps.googleusercontent.com',
-    clientSecret:'dZf0Gk-JC1R5aRWiwxmE6nrf',
-    callbackURL: 'http://localhost:3000/auth/google/callback'},
-    function(req, accessToken, refreshToken, profile, done){
-      done(null, profile);
-    }
 
-));
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -35,15 +26,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({secret:'complete'}));
-app.use(passport.initialize());
-app.use(passport.session());
-passport.serializeUser(function(user,done){
-  done(null, user);
-});
 
-passport.deserializeUser(function(user,done){
-  done(null, user);
-});
+require('./config/passport')(app);
+
 app.use('/', index);
 app.use('/users', users);
 app.use('/auth', auth);
